@@ -10,5 +10,6 @@ namespace StoredProcedureExecutor.Infrastructure
         string ShowFolderDialog(string? filter = null);
         Task ShowErrorDialog(ErrorDto error);
         Task<bool> ShowConfirmDialog(string message);
+        string ShowSaveDialog(string? fileName, string? filter);
     }
 }

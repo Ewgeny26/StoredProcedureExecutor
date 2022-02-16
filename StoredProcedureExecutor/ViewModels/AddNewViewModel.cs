@@ -1,12 +1,14 @@
 ﻿using StoredProcedureExecutor.Common;
 using StoredProcedureExecutor.Constants;
 using StoredProcedureExecutor.Dtos;
+using StoredProcedureExecutor.Exceptions;
 using StoredProcedureExecutor.Infrastructure;
 using StoredProcedureExecutor.Services.Constracts;
 using StoredProcedureExecutor.Services.Contracts;
 using StoredProcedureExecutor.UICommands;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -43,6 +45,7 @@ namespace StoredProcedureExecutor.ViewModels
             AddProcedureCommand = new AsyncRelayCommand(AddProcedure, AddProcedureLoader, CanAddingOrUpdatingProcedure);
             UpdateProcedureCommand = new AsyncRelayCommand(UpdateProcedure, UpdateProcedureLoader, CanAddingOrUpdatingProcedure);
             LoadPrecedureParamsCommand = new AsyncRelayCommand(LoadProcedureParams, ParamsLoader, CanAddingOrUpdatingProcedure);
+            SaveTemplateDialogCommand = new AsyncRelayCommand(DownloadTemplate, canExecute: CanDownloadingTemplate);
 
             CancelCommand = new RelayCommand(Cancel);
             RemoveParamCommand = new RelayCommand(RemoveParam, () => _selectedProcedureParam != null);
@@ -73,6 +76,7 @@ namespace StoredProcedureExecutor.ViewModels
         public ICommand UpdateProcedureCommand { get; }
         public ICommand LoadPrecedureParamsCommand { get; }
         public ICommand OpenFileDialogCommand { get; }
+        public ICommand SaveTemplateDialogCommand { get; }
         #endregion
 
         #region Properties
@@ -167,6 +171,22 @@ namespace StoredProcedureExecutor.ViewModels
             await _proceduresService.UpdateProcedure(ProcedureDto, Params);
             _snackbarService.Success(StatusMessages.ProcedureUpdated);
             _wehenDone?.Invoke();
+        }
+
+        private async Task DownloadTemplate()
+        {
+            var saveTemplatePath = _dialogsService.ShowSaveDialog(Template.Name, FileDialogFilter.Excel);
+            if (!string.IsNullOrWhiteSpace(saveTemplatePath) && Template?.Id != null)
+            {
+                var outputPath = Path.GetDirectoryName(saveTemplatePath) ?? throw new InvalidPathException($"Invalid path [{saveTemplatePath}]");
+                var fileName = Path.GetFileName(saveTemplatePath);
+                await _templatesService.DownloadFileAsync(Template, fileName, outputPath);
+            }
+        }
+
+        private bool CanDownloadingTemplate()
+        {
+            return Template?.Id != null;
         }
 
         #endregion
