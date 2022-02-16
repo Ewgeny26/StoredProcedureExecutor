@@ -140,7 +140,7 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock HorizontalAlignment="Left" 
                                            Foreground="#616161"
-                                           Text="{Binding Name}"
+                                           Text="{Binding Alias}"
                                            FontSize="18" FontWeight="Bold"
                                            Style="{StaticResource MaterialDesignTextBlock}"/>
                                     <TextBox Text="{Binding Value}"

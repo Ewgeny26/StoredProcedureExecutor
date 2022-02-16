@@ -7,6 +7,7 @@ namespace StoredProcedureExecutor.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string Alias { get; set; } = string.Empty;
         public SqlDbType Type { get; set; }
         public string? Value { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -15,9 +16,10 @@ namespace StoredProcedureExecutor.Models
         public Procedure? Procedure { get; set; }
 
         public ProcedureParam() { }
-        public ProcedureParam(string name, SqlDbType type, Procedure procedure)
+        public ProcedureParam(string name, string alias, SqlDbType type, Procedure procedure)
         {
             Name = name;
+            Alias = alias;
             Type = type;
             Procedure = procedure;
         }

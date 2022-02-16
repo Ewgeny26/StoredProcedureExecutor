@@ -9,6 +9,7 @@ using StoredProcedureExecutor.UICommands;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -44,7 +45,7 @@ namespace StoredProcedureExecutor.ViewModels
 
             AddProcedureCommand = new AsyncRelayCommand(AddProcedure, AddProcedureLoader, CanAddingOrUpdatingProcedure);
             UpdateProcedureCommand = new AsyncRelayCommand(UpdateProcedure, UpdateProcedureLoader, CanAddingOrUpdatingProcedure);
-            LoadPrecedureParamsCommand = new AsyncRelayCommand(LoadProcedureParams, ParamsLoader, CanAddingOrUpdatingProcedure);
+            LoadPrecedureParamsCommand = new AsyncRelayCommand(LoadProcedureParams, ParamsLoader, CalLoadingParams);
             SaveTemplateDialogCommand = new AsyncRelayCommand(DownloadTemplate, canExecute: CanDownloadingTemplate);
 
             CancelCommand = new RelayCommand(Cancel);
@@ -137,15 +138,21 @@ namespace StoredProcedureExecutor.ViewModels
         {
             await _procExecutorService.CheckExistProcedure(ProcedureDto);
             var procedureParams = await _procExecutorService.GetProcedureParamsInfo(ProcedureDto);
+            Params.Clear();
             foreach (var param in procedureParams)
             {
-                var createParam = new ParamDto { Name = param.Name, Type = param.Type };
+                var createParam = new ParamDto { Name = param.Name, Alias = param.Name, Type = param.Type };
                 Params.Add(createParam);
             }
             _snackbarService.Success(StatusMessages.ProcedureParamsLoaded);
         }
 
         private bool CanAddingOrUpdatingProcedure()
+        {
+            return CalLoadingParams()
+                && !Params.Any(p => string.IsNullOrWhiteSpace(p.Alias));
+        }
+        private bool CalLoadingParams()
         {
             return !string.IsNullOrWhiteSpace(ProcedureDto.Schema)
                 && !string.IsNullOrWhiteSpace(ProcedureDto.Name)

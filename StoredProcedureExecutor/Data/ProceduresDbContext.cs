@@ -54,6 +54,7 @@ namespace StoredProcedureExecutor.Data
                 .WithMany(p => p.Params)
                 .OnDelete(DeleteBehavior.Cascade);
                 b.Property(p => p.Name).HasMaxLength(ColumnConstraints.ParamNameMaxLength);
+                b.Property(p => p.Alias).HasMaxLength(ColumnConstraints.ParamNameMaxLength);
             });
 
             modelBuilder.Entity<Template>(b =>

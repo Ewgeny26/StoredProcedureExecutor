@@ -7,6 +7,7 @@ namespace StoredProcedureExecutor.Dtos
     public class ParamDto : NotifyPropertyChangedBase, IBaseParamInfo
     {
         private string _name = string.Empty;
+        private string _alias = string.Empty;
         private SqlDbType _type;
         private string? _value;
 
@@ -14,6 +15,11 @@ namespace StoredProcedureExecutor.Dtos
         {
             get => _name;
             set => SetProperty(ref _name, value);
+        }
+        public string Alias
+        {
+            get => _alias;
+            set => SetProperty(ref _alias, value);
         }
         public SqlDbType Type
         {
