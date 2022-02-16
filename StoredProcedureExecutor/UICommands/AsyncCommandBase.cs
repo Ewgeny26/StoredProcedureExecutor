@@ -17,6 +17,7 @@ namespace StoredProcedureExecutor.UICommands
         public async void Execute(object? parameter)
         {
             await ExecuteAsync(parameter);
+            CommandManager.InvalidateRequerySuggested();
         }
 
         public abstract Task ExecuteAsync(object? parameter);

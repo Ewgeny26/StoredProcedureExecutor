@@ -131,6 +131,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock HorizontalAlignment="Right" 
                                Foreground="#616161" 
@@ -138,7 +139,8 @@
                                FontSize="18" 
                                FontWeight="Bold" 
                                Style="{StaticResource MaterialDesignTextBlock}"/>
-                        <TextBox Text="{Binding Template.TemplatePath}" Grid.Column="1" Width="260" 
+                        <TextBox Text="{Binding Template.TemplatePath}" Grid.Column="1" 
+                                 Width="210" 
                                  HorizontalAlignment="Right"  
                                  materialDesign:HintAssist.Hint="Enter path" 
                                  FontSize="18"
@@ -148,10 +150,19 @@
                                     Command="{Binding OpenFileDialogCommand}"
                                     Height="40"
                                     Width="40"
-                                    ToolTip="Browse"
+                                    ToolTip="Browse to upload template"
                                     Grid.Column="2"
                                     Margin="0 0 0 0">
                             <materialDesign:PackIcon Foreground="#fff" Kind="File" Height="25" Width="25"/>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignFloatingActionButton}"
+                                    Command="{Binding SaveTemplateDialogCommand}"
+                                    Height="40"
+                                    Width="40"
+                                    ToolTip="Browse to save exist template"
+                                    Grid.Column="3"
+                                    Margin="10 0 0 0">
+                            <materialDesign:PackIcon Foreground="#fff" Kind="Download" Height="25" Width="25"/>
                         </Button>
                     </Grid>
 

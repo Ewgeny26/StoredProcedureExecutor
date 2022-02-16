@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace StoredProcedureExecutor.Infrastructure.Impementations
 {
@@ -32,6 +33,7 @@ namespace StoredProcedureExecutor.Infrastructure.Impementations
             finally
             {
                 mainWindow.Loader.Visibility = Visibility.Hidden;
+                CommandManager.InvalidateRequerySuggested(); // Refresh all binding commands
             }
 
         }

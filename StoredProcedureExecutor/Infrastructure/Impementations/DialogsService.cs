@@ -62,7 +62,7 @@ namespace StoredProcedureExecutor.Infrastructure.Impementations
 
         public string ShowFileDialog(string? filter = null)
         {
-            var fileDialog = new System.Windows.Forms.OpenFileDialog();
+            var fileDialog = new OpenFileDialog();
             fileDialog.Multiselect = false;
             fileDialog.CheckFileExists = true;
             fileDialog.CheckPathExists = true;
@@ -84,6 +84,21 @@ namespace StoredProcedureExecutor.Infrastructure.Impementations
             {
                 return folderDialog.SelectedPath;
             }
+            return string.Empty;
+        }
+
+        public string ShowSaveDialog(string? fileName, string? filter)
+        {
+            var saveDialog = new SaveFileDialog();
+            saveDialog.CheckPathExists = true;
+            saveDialog.Filter = filter;
+            saveDialog.FileName = fileName;
+
+            if (saveDialog.ShowDialog() == DialogResult.OK)
+            {
+                return saveDialog.FileName;
+            }
+
             return string.Empty;
         }
 
