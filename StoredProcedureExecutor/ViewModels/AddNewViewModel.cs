@@ -186,7 +186,7 @@ namespace StoredProcedureExecutor.ViewModels
             if (!string.IsNullOrWhiteSpace(saveTemplatePath) && Template?.Id != null)
             {
                 var outputPath = Path.GetDirectoryName(saveTemplatePath) ?? throw new InvalidPathException($"Invalid path [{saveTemplatePath}]");
-                var fileName = Path.GetFileName(saveTemplatePath);
+                var fileName = Path.GetFileNameWithoutExtension(saveTemplatePath);
                 await _templatesService.DownloadFileAsync(Template, fileName, outputPath);
             }
         }
