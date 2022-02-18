@@ -45,12 +45,12 @@ namespace StoredProcedureExecutor.ViewModels
 
             AddProcedureCommand = new AsyncRelayCommand(AddProcedure, AddProcedureLoader, CanAddingOrUpdatingProcedure);
             UpdateProcedureCommand = new AsyncRelayCommand(UpdateProcedure, UpdateProcedureLoader, CanAddingOrUpdatingProcedure);
-            LoadPrecedureParamsCommand = new AsyncRelayCommand(LoadProcedureParams, ParamsLoader, CalLoadingParams);
+            LoadPrecedureParamsCommand = new AsyncRelayCommand(LoadProcedureParams, ParamsLoader, CanLoadingParams);
             SaveTemplateDialogCommand = new AsyncRelayCommand(DownloadTemplate, canExecute: CanDownloadingTemplate);
 
             CancelCommand = new RelayCommand(Cancel);
             RemoveParamCommand = new RelayCommand(RemoveParam, () => _selectedProcedureParam != null);
-            OpenFileDialogCommand = new RelayCommand(OpenFileDialog);
+            UploadFileDialogCommand = new RelayCommand(OpenFileDialog);
         }
 
         public async Task Initialize(Action? whenDone, object? model)
@@ -76,7 +76,7 @@ namespace StoredProcedureExecutor.ViewModels
         public ICommand AddProcedureCommand { get; }
         public ICommand UpdateProcedureCommand { get; }
         public ICommand LoadPrecedureParamsCommand { get; }
-        public ICommand OpenFileDialogCommand { get; }
+        public ICommand UploadFileDialogCommand { get; }
         public ICommand SaveTemplateDialogCommand { get; }
         #endregion
 
@@ -149,10 +149,10 @@ namespace StoredProcedureExecutor.ViewModels
 
         private bool CanAddingOrUpdatingProcedure()
         {
-            return CalLoadingParams()
+            return CanLoadingParams()
                 && !Params.Any(p => string.IsNullOrWhiteSpace(p.Alias));
         }
-        private bool CalLoadingParams()
+        private bool CanLoadingParams()
         {
             return !string.IsNullOrWhiteSpace(ProcedureDto.Schema)
                 && !string.IsNullOrWhiteSpace(ProcedureDto.Name)
