@@ -33,7 +33,7 @@ namespace StoredProcedureExecutor.UICommands
             try
             {
                 timer.Start();
-                _viewModel.ReportPath = await _reportsService.CreateReportByTemplate(_viewModel.Template, _viewModel.Procedure.OutputReportPath);
+                _viewModel.ReportPath = await _reportsService.CreateReportByTemplate(_viewModel.Template, _viewModel.Procedure.OutputReportPath, _viewModel.Params);
                 _viewModel.Procedure.LastRefreshedAt = DateTime.UtcNow;
                 _snackbarService.Success(StatusMessages.TemplateRefreshed);
 

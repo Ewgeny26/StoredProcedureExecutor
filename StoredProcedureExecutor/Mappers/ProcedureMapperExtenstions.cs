@@ -31,6 +31,7 @@ namespace StoredProcedureExecutor.Mappers
             {
                 Id = model.Id,
                 Name = model.Name,
+                Alias = model.Alias,
                 Type = model.Type,
                 Value = model.Value
             };
@@ -62,6 +63,7 @@ namespace StoredProcedureExecutor.Mappers
             {
                 Id = dto.Id.HasValue ? dto.Id.Value : 0,
                 Name = dto.Name,
+                Alias = dto.Alias,
                 Type = dto.Type,
                 Value = dto.Value,
                 Procedure = procedure

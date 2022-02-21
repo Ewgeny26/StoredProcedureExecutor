@@ -36,7 +36,7 @@ namespace StoredProcedureExecutor.UICommands
                 timer.Start();
                 await _procExecutorService.ExecuteProc(_viewModel.Procedure, _viewModel.Params);
                 _viewModel.Procedure.LastExecutedAt = DateTime.UtcNow;
-                _snackbarService.Success(StatusMessages.ProcedereExectued);
+                _snackbarService.Success(StatusMessages.ProcedereExecuted);
             }
             finally 
             {

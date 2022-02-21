@@ -9,6 +9,7 @@ using StoredProcedureExecutor.UICommands;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -44,12 +45,12 @@ namespace StoredProcedureExecutor.ViewModels
 
             AddProcedureCommand = new AsyncRelayCommand(AddProcedure, AddProcedureLoader, CanAddingOrUpdatingProcedure);
             UpdateProcedureCommand = new AsyncRelayCommand(UpdateProcedure, UpdateProcedureLoader, CanAddingOrUpdatingProcedure);
-            LoadPrecedureParamsCommand = new AsyncRelayCommand(LoadProcedureParams, ParamsLoader, CanAddingOrUpdatingProcedure);
+            LoadPrecedureParamsCommand = new AsyncRelayCommand(LoadProcedureParams, ParamsLoader, CanLoadingParams);
             SaveTemplateDialogCommand = new AsyncRelayCommand(DownloadTemplate, canExecute: CanDownloadingTemplate);
 
             CancelCommand = new RelayCommand(Cancel);
             RemoveParamCommand = new RelayCommand(RemoveParam, () => _selectedProcedureParam != null);
-            OpenFileDialogCommand = new RelayCommand(OpenFileDialog);
+            UploadFileDialogCommand = new RelayCommand(OpenFileDialog);
         }
 
         public async Task Initialize(Action? whenDone, object? model)
@@ -75,7 +76,7 @@ namespace StoredProcedureExecutor.ViewModels
         public ICommand AddProcedureCommand { get; }
         public ICommand UpdateProcedureCommand { get; }
         public ICommand LoadPrecedureParamsCommand { get; }
-        public ICommand OpenFileDialogCommand { get; }
+        public ICommand UploadFileDialogCommand { get; }
         public ICommand SaveTemplateDialogCommand { get; }
         #endregion
 
@@ -137,15 +138,21 @@ namespace StoredProcedureExecutor.ViewModels
         {
             await _procExecutorService.CheckExistProcedure(ProcedureDto);
             var procedureParams = await _procExecutorService.GetProcedureParamsInfo(ProcedureDto);
+            Params.Clear();
             foreach (var param in procedureParams)
             {
-                var createParam = new ParamDto { Name = param.Name, Type = param.Type };
+                var createParam = new ParamDto { Name = param.Name, Alias = param.Name, Type = param.Type };
                 Params.Add(createParam);
             }
             _snackbarService.Success(StatusMessages.ProcedureParamsLoaded);
         }
 
         private bool CanAddingOrUpdatingProcedure()
+        {
+            return CanLoadingParams()
+                && !Params.Any(p => string.IsNullOrWhiteSpace(p.Alias));
+        }
+        private bool CanLoadingParams()
         {
             return !string.IsNullOrWhiteSpace(ProcedureDto.Schema)
                 && !string.IsNullOrWhiteSpace(ProcedureDto.Name)
@@ -179,7 +186,7 @@ namespace StoredProcedureExecutor.ViewModels
             if (!string.IsNullOrWhiteSpace(saveTemplatePath) && Template?.Id != null)
             {
                 var outputPath = Path.GetDirectoryName(saveTemplatePath) ?? throw new InvalidPathException($"Invalid path [{saveTemplatePath}]");
-                var fileName = Path.GetFileName(saveTemplatePath);
+                var fileName = Path.GetFileNameWithoutExtension(saveTemplatePath);
                 await _templatesService.DownloadFileAsync(Template, fileName, outputPath);
             }
         }

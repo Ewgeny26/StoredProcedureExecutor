@@ -1,7 +1,10 @@
 ﻿using StoredProcedureExecutor.Services.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -9,12 +12,12 @@ namespace StoredProcedureExecutor.Services.Implementations
 {
     public class ExcelTemplateProviderService : ITemplateProviderService
     {
-        public async Task RefreshDataAsync(string pathToTemplate)
+        public async Task RefreshDataAsync(string pathToTemplate, IEnumerable<IBaseParamInfo>? paramInfoList)
         {
-            await Task.Run(() => { RefreshData(pathToTemplate); });
+            await Task.Run(() => { RefreshData(pathToTemplate, paramInfoList); });
         }
 
-        private void RefreshData(string pathToTemplate)
+        private void RefreshData(string pathToTemplate, IEnumerable<IBaseParamInfo>? paramInfoList)
         {
             Excel.Application? excelApp = null;
             Excel.Workbook? workbook = null;
@@ -23,7 +26,12 @@ namespace StoredProcedureExecutor.Services.Implementations
                 excelApp = new Excel.Application();
                 var name = excelApp.Name;
                 excelApp.Visible = false;
+                excelApp.DisplayAlerts = false;
                 workbook = excelApp.Workbooks.Open(pathToTemplate);
+                for (int i = 1; i <= workbook.Queries.Count; i++)
+                {
+                    workbook.Queries[i].Formula = AddQueriesParams(workbook.Queries[i].Formula, paramInfoList);
+                }
                 workbook.RefreshAll();
                 excelApp.Application.CalculateUntilAsyncQueriesDone();
                 workbook.Close(true);
@@ -57,6 +65,17 @@ namespace StoredProcedureExecutor.Services.Implementations
                     process.Kill();
                 }
             }
+        }
+
+        private string AddQueriesParams(string excelQuery, IEnumerable<IBaseParamInfo>? paramInfoList)
+        {
+            var queryBuilder = new StringBuilder(excelQuery);
+            if (paramInfoList == null || paramInfoList.Count() == 0) return queryBuilder.ToString();
+            foreach (var paramInfo in paramInfoList)
+            {
+                queryBuilder.Replace(paramInfo.Name, paramInfo.Value);
+            }
+            return queryBuilder.ToString();
         }
     }
 }

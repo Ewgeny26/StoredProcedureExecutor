@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace StoredProcedureExecutor.Services.Contracts
 {
     public interface ITemplateProviderService
     {
-        Task RefreshDataAsync(string pathToTemplate);
+        Task RefreshDataAsync(string pathToTemplate, IEnumerable<IBaseParamInfo>? paramInfoList);
     }
 }

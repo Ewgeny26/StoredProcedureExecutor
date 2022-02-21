@@ -34,14 +34,14 @@ namespace StoredProcedureExecutor.Data
             {
                 b.ToTable($"{prefix}_Procedures", schema);
                 b.HasKey(p => p.Id);
-                b.Property(p => p.Server).HasMaxLength(ColumnConstraints.ServerMaxLenght);
-                b.Property(p => p.Database).HasMaxLength(ColumnConstraints.DatabaseMaxLenght);
-                b.Property(p => p.Schema).HasMaxLength(ColumnConstraints.SchemaMaxLenght);
+                b.Property(p => p.Server).HasMaxLength(ColumnConstraints.ServerMaxLength);
+                b.Property(p => p.Database).HasMaxLength(ColumnConstraints.DatabaseMaxLength);
+                b.Property(p => p.Schema).HasMaxLength(ColumnConstraints.SchemaMaxLength);
                 b.Property(p => p.Name).HasMaxLength(ColumnConstraints.ProcedureMaxLength);
                 b.Property(p => p.Description).HasMaxLength(ColumnConstraints.DescriptionMaxLenght);
                 b.Property(p => p.EmailRecipients).HasMaxLength(ColumnConstraints.EmailRecipientsMaxLength);
-                b.Property(p => p.EmailSubject).HasMaxLength(ColumnConstraints.EmailSubjectMaxLenght);
-                b.Property(p => p.OutputReportPath).HasMaxLength(ColumnConstraints.OutputReportPath);
+                b.Property(p => p.EmailSubject).HasMaxLength(ColumnConstraints.EmailSubjectMaxLength);
+                b.Property(p => p.OutputReportPath).HasMaxLength(ColumnConstraints.OutputReportPathLength);
                 b.Property(p => p.LastUsername).HasMaxLength(ColumnConstraints.LastUsernameMaxLength);
 
             });
@@ -54,6 +54,7 @@ namespace StoredProcedureExecutor.Data
                 .WithMany(p => p.Params)
                 .OnDelete(DeleteBehavior.Cascade);
                 b.Property(p => p.Name).HasMaxLength(ColumnConstraints.ParamNameMaxLength);
+                b.Property(p => p.Alias).HasMaxLength(ColumnConstraints.ParamNameMaxLength);
             });
 
             modelBuilder.Entity<Template>(b =>
