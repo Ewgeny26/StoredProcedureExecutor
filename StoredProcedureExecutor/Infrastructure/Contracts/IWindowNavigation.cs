@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace StoredProcedureExecutor.Infrastructure
+namespace StoredProcedureExecutor.Infrastructure.Contracts
 {
     public interface IWindowNavigation
     {

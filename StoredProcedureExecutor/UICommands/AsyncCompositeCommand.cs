@@ -8,11 +8,13 @@ namespace StoredProcedureExecutor.UICommands
     {
         protected readonly IEnumerable<AsyncCommandBase> _commands;
         protected readonly CommandLoader _loader;
+
         public AsyncCompositeCommand(CommandLoader loader, IEnumerable<AsyncCommandBase> commands)
         {
             _commands = commands;
             _loader = loader;
         }
+
         public override async Task ExecuteAsync(object? parameter)
         {
             _loader.Start();

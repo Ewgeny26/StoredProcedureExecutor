@@ -6,6 +6,7 @@ using StoredProcedureExecutor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using StoredProcedureExecutor.Infrastructure.Contracts;
 
 namespace StoredProcedureExecutor.UICommands
 {
@@ -15,6 +16,7 @@ namespace StoredProcedureExecutor.UICommands
         protected readonly ISnackbarService _snackbarService;
         protected readonly IExecStatisticsService _execStatisticsService;
         protected readonly ExecutingViewModel _viewModel;
+
         public SendReportCommand(
             ExecutingViewModel viewModel,
             IEmailSenderService emailSenderService,
@@ -29,16 +31,19 @@ namespace StoredProcedureExecutor.UICommands
 
         public override async Task ExecuteAsync(object? parameter)
         {
-            if (_viewModel.Procedure == null
-                || _viewModel.Procedure.EmailRecipients == null
-                || _viewModel.Procedure.EmailSubject == null
-                || _viewModel.ReportPath == null) return;
+            if (_viewModel.Procedure?.EmailRecipients == null || _viewModel.Procedure.EmailSubject == null ||
+                _viewModel.ReportPath == null)
+            {
+                return;
+            }
+
             var timer = new TimerDto();
             try
             {
                 timer.Start();
                 var attachments = new List<string> { _viewModel.ReportPath };
-                var emailMessage = new EmailMessageDto(_viewModel.Procedure.EmailRecipients.Split(";"), _viewModel.Procedure.EmailSubject, null, attachments);
+                var emailMessage = new EmailMessageDto(_viewModel.Procedure.EmailRecipients.Split(";"),
+                    _viewModel.Procedure.EmailSubject, null, attachments);
                 await _emailSenderService.SendAsync(emailMessage);
                 _viewModel.Procedure.LastSentTemplateAt = DateTime.UtcNow;
                 _snackbarService.Success(StatusMessages.TemplateSent);
@@ -53,8 +58,8 @@ namespace StoredProcedureExecutor.UICommands
         public override bool CanExecute(object? parameter)
         {
             return !string.IsNullOrWhiteSpace(_viewModel?.Procedure?.EmailRecipients)
-            && !string.IsNullOrWhiteSpace(_viewModel?.Procedure?.EmailSubject)
-            && !_viewModel.IsOperationRun;
+                   && !string.IsNullOrWhiteSpace(_viewModel?.Procedure?.EmailSubject)
+                   && !_viewModel.IsOperationRun;
         }
     }
 }

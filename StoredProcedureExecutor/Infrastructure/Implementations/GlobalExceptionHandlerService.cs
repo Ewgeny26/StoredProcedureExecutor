@@ -6,7 +6,7 @@ using StoredProcedureExecutor.Exceptions;
 using StoredProcedureExecutor.Infrastructure.Contracts;
 using System;
 
-namespace StoredProcedureExecutor.Infrastructure.Impementations
+namespace StoredProcedureExecutor.Infrastructure.Implementations
 {
     public class GlobalExceptionHandlerService : IGlobalExceptionHandlerService
     {

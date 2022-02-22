@@ -5,8 +5,8 @@ namespace StoredProcedureExecutor.UICommands
 {
     public class RelayCommand : ICommand
     {
-        readonly Action _execute;
-        readonly Func<bool>? _canExecute;
+        private readonly Action _execute;
+        private readonly Func<bool>? _canExecute;
 
         public RelayCommand(Action execute, Func<bool>? canExecute = null)
         {
@@ -16,13 +16,13 @@ namespace StoredProcedureExecutor.UICommands
 
         public bool CanExecute()
         {
-            return _canExecute == null ? true : _canExecute.Invoke();
+            return _canExecute?.Invoke() ?? true;
         }
 
         public event EventHandler? CanExecuteChanged
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public void Execute()

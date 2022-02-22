@@ -7,7 +7,6 @@ namespace StoredProcedureExecutor.HostBuilders
     {
         public static IHostBuilder AddWindows(this IHostBuilder host)
         {
-
             host.ConfigureServices(services =>
             {
                 services.AddSingleton<MainWindow>();

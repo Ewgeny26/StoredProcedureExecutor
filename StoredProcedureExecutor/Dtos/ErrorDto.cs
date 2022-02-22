@@ -1,4 +1,5 @@
 ﻿using StoredProcedureExecutor.Infrastructure;
+using StoredProcedureExecutor.Infrastructure.Implementations;
 
 namespace StoredProcedureExecutor.Dtos
 {
@@ -6,11 +7,13 @@ namespace StoredProcedureExecutor.Dtos
     {
         private string _message = string.Empty;
         private string? _details;
+
         public string Message
         {
             get => _message;
             set => SetProperty(ref _message, value);
         }
+
         public string? Details
         {
             get => _details;

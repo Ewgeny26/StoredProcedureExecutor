@@ -12,7 +12,6 @@ namespace StoredProcedureExecutor.Configurations
         public int ConnectRetryCount { get; set; }
         public int ProcExecRetryCount { get; set; }
         public int ProcExecRetryDelay { get; set; }
-        public List<string>? AvailabeleExecProcOnServers { get; set; }
+        public List<string>? AvailableExecProcOnServers { get; set; }
     }
 }
-

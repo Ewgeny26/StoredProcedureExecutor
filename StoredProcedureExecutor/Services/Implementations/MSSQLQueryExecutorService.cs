@@ -11,25 +11,25 @@ using System.Threading.Tasks;
 
 namespace StoredProcedureExecutor.Services.Implementations
 {
-    public class MSSQLQueryExecutorService : IPlainQueryExecutorService
+    public class MssqlQueryExecutorService : IPlainQueryExecutorService
     {
-        public async Task<List<T>> RawSqlQueryAsync<T>(string connStr, string query, IEnumerable<DbParameter>? parameters, Func<DbDataReader, T> map)
+        public async Task<List<T>> RawSqlQueryAsync<T>(string connStr, string query,
+            IEnumerable<DbParameter>? parameters, Func<DbDataReader, T> map)
         {
-
-            using (var connection = new SqlConnection(connStr))
+            await using (var connection = new SqlConnection(connStr))
             {
-                using (var command = connection.CreateCommand())
+                await using (var command = connection.CreateCommand())
                 {
                     command.CommandText = query;
                     command.CommandType = CommandType.Text;
                     if (parameters != null)
                     {
                         command.Parameters.AddRange(parameters.ToArray());
-
                     }
+
                     await connection.OpenAsync();
 
-                    using (var result = await command.ExecuteReaderAsync())
+                    await using (var result = await command.ExecuteReaderAsync())
                     {
                         var entities = new List<T>();
 
@@ -46,34 +46,32 @@ namespace StoredProcedureExecutor.Services.Implementations
 
         public async Task ExecuteCommandAsync(ExecuteCommandDto commandDto)
         {
-            using (var connection = new SqlConnection(commandDto.connectionString))
+            await using (var connection = new SqlConnection(commandDto.ConnectionString))
             {
-                using (var command = connection.CreateCommand())
+                await using (var command = connection.CreateCommand())
                 {
                     command.CommandText = commandDto.Query;
                     command.CommandType = CommandType.StoredProcedure;
                     if (commandDto.Parameters != null)
                     {
                         command.Parameters.AddRange(commandDto.Parameters.ToArray());
-
                     }
+
                     await connection.OpenAsync();
-                    var execFunc = () => Exec(connection, command);
                     var retryExecutor = new RetryExecutor(commandDto.RetryCount, commandDto.RetryDelay);
-                    await retryExecutor.RetryAsync(execFunc);
+                    await retryExecutor.RetryAsync(() => Exec(connection, command));
                 }
             }
         }
 
-        private async Task Exec(SqlConnection connection, SqlCommand sqlCommand)
+        private static async Task Exec(DbConnection connection, DbCommand sqlCommand)
         {
-            if(connection.State != ConnectionState.Open)
+            if (connection.State != ConnectionState.Open)
             {
                 await connection.OpenAsync();
             }
+
             await sqlCommand.ExecuteNonQueryAsync();
         }
-
-
     }
 }

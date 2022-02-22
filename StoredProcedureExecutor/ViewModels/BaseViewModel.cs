@@ -1,4 +1,4 @@
-﻿using StoredProcedureExecutor.Infrastructure;
+﻿using StoredProcedureExecutor.Infrastructure.Implementations;
 
 namespace StoredProcedureExecutor.ViewModels
 {

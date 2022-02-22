@@ -5,8 +5,11 @@ namespace StoredProcedureExecutor.Common
 {
     public class RetryExecutor
     {
-        private int _retryCount;
-        private int _retryDelay;
+        private const int NumberOfMillisecondsInSeconds = 1000;
+
+        private readonly int _retryCount;
+        private readonly int _retryDelay;
+
         public RetryExecutor(int retryCount, int retryDelayInSeconds)
         {
             _retryCount = retryCount;
@@ -17,7 +20,6 @@ namespace StoredProcedureExecutor.Common
         {
             var retries = 0;
             while (true)
-            {
                 try
                 {
                     retries++;
@@ -30,12 +32,9 @@ namespace StoredProcedureExecutor.Common
                     {
                         throw;
                     }
-                    else
-                    {
-                        await Task.Delay(_retryDelay * 1000);
-                    }
+
+                    await Task.Delay(_retryDelay * NumberOfMillisecondsInSeconds);
                 }
-            }
         }
     }
 }

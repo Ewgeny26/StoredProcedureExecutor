@@ -12,14 +12,17 @@ namespace StoredProcedureExecutor.Services.Implementations
     public class ExecStatisticsService : IExecStatisticsService
     {
         private readonly IProceduresDbContext _context;
+
         public ExecStatisticsService(IProceduresDbContext context)
         {
             _context = context;
         }
-        public async Task SaveProcedureExecuteInfo(TimerDto timer, ProcedureDto procedure, IEnumerable<ParamDto>? paramDtos)
+
+        public async Task SaveProcedureExecuteInfo(TimerDto timer, ProcedureDto procedure,
+            IEnumerable<ParamDto>? paramDtoList)
         {
-            var paramsJson = paramDtos != null && paramDtos.Count() > 0
-                ? JsonSerializer.Serialize(paramDtos.Select(p => new { Name = p.Name, Value = p.Value }))
+            var paramsJson = paramDtoList != null
+                ? JsonSerializer.Serialize(paramDtoList.Select(p => new { p.Name, p.Value }))
                 : null;
             var statistic = BuildStatistic(OperationType.Procedure, timer, procedure, paramsJson);
             await SaveStatistic(statistic);
@@ -34,12 +37,13 @@ namespace StoredProcedureExecutor.Services.Implementations
 
         public async Task SaveReportSendInfo(TimerDto timer, ProcedureDto procedure)
         {
-            var paramsJson = JsonSerializer.Serialize(new { EmailRecipients = procedure.EmailRecipients, EmailSubject = procedure.EmailSubject });
+            var paramsJson = JsonSerializer.Serialize(new { procedure.EmailRecipients, procedure.EmailSubject });
             var statistic = BuildStatistic(OperationType.SendReport, timer, procedure, paramsJson);
             await SaveStatistic(statistic);
         }
 
-        private ExecStatistic BuildStatistic(OperationType operation, TimerDto timer, ProcedureDto procedure, string? paramsJson)
+        private static ExecStatistic BuildStatistic(OperationType operation, TimerDto timer, ProcedureDto procedure,
+            string? paramsJson)
         {
             return new ExecStatistic
             {

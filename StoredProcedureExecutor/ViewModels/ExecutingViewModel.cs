@@ -1,7 +1,5 @@
 ﻿using StoredProcedureExecutor.Common;
 using StoredProcedureExecutor.Dtos;
-using StoredProcedureExecutor.Infrastructure;
-using StoredProcedureExecutor.Services.Constracts;
 using StoredProcedureExecutor.Services.Contracts;
 using StoredProcedureExecutor.UICommands;
 using System;
@@ -9,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using StoredProcedureExecutor.Infrastructure.Contracts;
 
 namespace StoredProcedureExecutor.ViewModels
 {
@@ -19,7 +18,7 @@ namespace StoredProcedureExecutor.ViewModels
         private readonly IProceduresService _proceduresService;
         private readonly ITemplatesService _templatesService;
 
-        private Action? _wehenDone;
+        private Action? _whenDone;
         private string? _reportPath;
         private ProcedureDto? _procedure;
         private TemplateDto? _template;
@@ -35,7 +34,7 @@ namespace StoredProcedureExecutor.ViewModels
             ITemplatesService templatesService,
             ICurrentUserService currentUserService,
             IExecStatisticsService execStatisticsService
-            )
+        )
         {
             _navigationService = navigationService;
             _dialogsService = dialogsService;
@@ -43,14 +42,22 @@ namespace StoredProcedureExecutor.ViewModels
             _templatesService = templatesService;
 
             var saveProcedureCommand = new SaveProcedureCommand(this, proceduresService, currentUserService);
-            var executeProcedureCommand = new ExecuteProcedureCommand(this, procExecutorService, snackbarService, execStatisticsService);
-            var refreshTemplateCommand = new RefreshReportCommand(this, reportsService, snackbarService, execStatisticsService);
-            var sendTemplateCommand = new SendReportCommand(this, emailSenderService, snackbarService, execStatisticsService);
+            var executeProcedureCommand =
+                new ExecuteProcedureCommand(this, procExecutorService, snackbarService, execStatisticsService);
+            var refreshTemplateCommand =
+                new RefreshReportCommand(this, reportsService, snackbarService, execStatisticsService);
+            var sendTemplateCommand =
+                new SendReportCommand(this, emailSenderService, snackbarService, execStatisticsService);
 
-            ExecuteProcedureCommand = new AsyncCompositeCommand(ExecuterLoader, new List<AsyncCommandBase> { saveProcedureCommand, executeProcedureCommand });
-            RefreshDataTemplateCommand = new AsyncCompositeCommand(RefreshLoader, new List<AsyncCommandBase> { saveProcedureCommand, refreshTemplateCommand });
-            SendTemplateToEmailCommand = new AsyncCompositeCommand(SendTemplateLoader, new List<AsyncCommandBase> { saveProcedureCommand, sendTemplateCommand });
-            RunPipelineCommand = new AsyncCompositeCommand(PipelineLoader, new List<AsyncCommandBase> { saveProcedureCommand, executeProcedureCommand, refreshTemplateCommand, sendTemplateCommand });
+            ExecuteProcedureCommand = new AsyncCompositeCommand(ExecuteLoader,
+                new List<AsyncCommandBase> { saveProcedureCommand, executeProcedureCommand });
+            RefreshDataTemplateCommand = new AsyncCompositeCommand(RefreshLoader,
+                new List<AsyncCommandBase> { saveProcedureCommand, refreshTemplateCommand });
+            SendTemplateToEmailCommand = new AsyncCompositeCommand(SendTemplateLoader,
+                new List<AsyncCommandBase> { saveProcedureCommand, sendTemplateCommand });
+            RunPipelineCommand = new AsyncCompositeCommand(PipelineLoader,
+                new List<AsyncCommandBase>
+                    { saveProcedureCommand, executeProcedureCommand, refreshTemplateCommand, sendTemplateCommand });
 
             EditCommand = new RelayCommand(EditProcedure);
             OpenFolderDialogCommand = new RelayCommand(OpenFolderDialog);
@@ -59,15 +66,16 @@ namespace StoredProcedureExecutor.ViewModels
 
         public async Task Initialize(Action? whenDone, object? model)
         {
-            _wehenDone = whenDone ?? throw new ArgumentNullException(nameof(whenDone));
-            if (model != null && int.TryParse(model.ToString(), out int procedureId))
+            _whenDone = whenDone ?? throw new ArgumentNullException(nameof(whenDone));
+            if (model != null && int.TryParse(model.ToString(), out var procedureId))
             {
                 Procedure = await _proceduresService.GetProcedureById(procedureId);
-                var precedereParam = await _proceduresService.GetProcedureParams(procedureId);
-                if (precedereParam != null)
+                var procedureParams = await _proceduresService.GetProcedureParams(procedureId);
+                if (procedureParams != null)
                 {
-                    Params.FillObservableCollection(precedereParam);
+                    Params.FillObservableCollection(procedureParams);
                 }
+
                 Template = await _templatesService.GetByProcedureId(procedureId);
             }
             else
@@ -77,6 +85,7 @@ namespace StoredProcedureExecutor.ViewModels
         }
 
         #region Commands
+
         public ICommand BackCommand { get; }
         public ICommand RefreshDataTemplateCommand { get; }
         public ICommand SendTemplateToEmailCommand { get; }
@@ -94,24 +103,25 @@ namespace StoredProcedureExecutor.ViewModels
             get => _procedure;
             set => SetProperty(ref _procedure, value);
         }
+
         public ObservableCollection<ParamDto> Params { get; } = new ObservableCollection<ParamDto>();
+
         public TemplateDto? Template
         {
             get => _template;
             set => SetProperty(ref _template, value);
         }
-        public CommandLoader ExecuterLoader { get; } = new CommandLoader();
+
+        public CommandLoader ExecuteLoader { get; } = new CommandLoader();
         public CommandLoader RefreshLoader { get; } = new CommandLoader();
         public CommandLoader SendTemplateLoader { get; } = new CommandLoader();
         public CommandLoader PipelineLoader { get; } = new CommandLoader();
 
-        public bool IsOperationRun
-        {
-            get => !ExecuterLoader.BtnEnable 
-                || !RefreshLoader.BtnEnable 
-                || !SendTemplateLoader.BtnEnable 
-                || !PipelineLoader.BtnEnable;
-        }
+        public bool IsOperationRun =>
+            !ExecuteLoader.BtnEnable
+            || !RefreshLoader.BtnEnable
+            || !SendTemplateLoader.BtnEnable
+            || !PipelineLoader.BtnEnable;
 
         public string? ReportPath
         {
@@ -125,7 +135,7 @@ namespace StoredProcedureExecutor.ViewModels
 
         private void Back()
         {
-            _wehenDone?.Invoke();
+            _whenDone?.Invoke();
         }
 
         private async void EditProcedure()
@@ -135,7 +145,7 @@ namespace StoredProcedureExecutor.ViewModels
 
         private async void ReturnOnPage()
         {
-            await _navigationService.NavigateTo<ExecutingViewModel>(_wehenDone, Procedure?.Id);
+            await _navigationService.NavigateTo<ExecutingViewModel>(_whenDone, Procedure?.Id);
         }
 
         private void OpenFolderDialog()

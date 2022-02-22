@@ -1,4 +1,4 @@
-﻿namespace StoredProcedureExecutor.Infrastructure
+﻿namespace StoredProcedureExecutor.Infrastructure.Contracts
 {
     public interface IDialogViewModel
     {

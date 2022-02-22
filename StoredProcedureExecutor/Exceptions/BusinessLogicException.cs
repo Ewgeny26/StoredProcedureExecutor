@@ -6,7 +6,6 @@ namespace StoredProcedureExecutor.Exceptions
     {
         public BusinessLogicException(string message) : base(message)
         {
-
         }
     }
 }

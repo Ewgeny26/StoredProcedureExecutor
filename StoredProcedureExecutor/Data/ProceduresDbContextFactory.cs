@@ -5,27 +5,31 @@ using System;
 
 namespace StoredProcedureExecutor.Data
 {
-    internal class ProceduresDbContextFactory : IDesignTimeDbContextFactory<ProceduresDbContext>
+    public class ProceduresDbContextFactory : IDesignTimeDbContextFactory<ProceduresDbContext>
     {
+        private const int MinArgsCount = 2;
+        private const string EnvVariableName = "--environment";
+        private const int EnvVariableNameIndex = 0;
+        private const int EnvVariableValueIndex = 1;
+
         public ProceduresDbContext CreateDbContext(string[] args)
         {
-            var enviroment = GetEnvironment(args) ?? throw new ArgumentNullException("Input param [--environment] must not be empty");
-            var configuration = new ConfigurationFactory(enviroment).CreateRequired<DbConfiguration>(ConfigSection.Database);
+            var environment = GetEnvironment(args) ??
+                              throw new ArgumentNullException($"Input param [{EnvVariableName}] must not be empty");
+            var configuration =
+                new ConfigurationFactory(environment).CreateRequired<DbConfiguration>(ConfigSection.Database);
             return new ProceduresDbContext(configuration);
         }
 
-        private string? GetEnvironment(string[] args)
+        private static string? GetEnvironment(string[] args)
         {
-            if (args.Length < 2) return null;
-            var command = args[0];
-            if (command.Contains("--environment"))
-            {
-                return args[1];
-            }
-            else
+            if (args.Length < MinArgsCount)
             {
                 return null;
             }
+
+            var command = args[EnvVariableNameIndex];
+            return command.Contains(EnvVariableName) ? args[EnvVariableValueIndex] : null;
         }
     }
 }

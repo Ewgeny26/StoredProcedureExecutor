@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using StoredProcedureExecutor.HostBuilders;
 using StoredProcedureExecutor.Infrastructure.Contracts;
-using StoredProcedureExecutor.Services.Constracts;
 using StoredProcedureExecutor.ViewModels;
 using System;
 using System.Threading.Tasks;
@@ -27,7 +26,7 @@ namespace StoredProcedureExecutor
             return Host.CreateDefaultBuilder()
                 .AddConfiguration()
                 .AddData()
-                .AddBussinesServices()
+                .AddBusinessServices()
                 .AddViewModels()
                 .AddPages()
                 .AddInfrastructureServices()
@@ -41,7 +40,7 @@ namespace StoredProcedureExecutor
             var mainWindow = _host.Services.GetRequiredService<MainWindow>();
             var navigator = _host.Services.GetRequiredService<INavigationService>();
             mainWindow.Show();
-            await navigator.NavigateTo<ProceduresViewModel>(null, null);
+            await navigator.NavigateTo<ProceduresViewModel>();
             base.OnStartup(e);
         }
 
@@ -73,11 +72,9 @@ namespace StoredProcedureExecutor
             };
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
-                _host.Services.GetRequiredService<IGlobalExceptionHandlerService>().Handle(e.ExceptionObject as Exception);
+                _host.Services.GetRequiredService<IGlobalExceptionHandlerService>()
+                    .Handle(e.ExceptionObject as Exception);
             };
-
         }
-
-
     }
 }

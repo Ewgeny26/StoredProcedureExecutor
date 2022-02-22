@@ -6,7 +6,7 @@ namespace StoredProcedureExecutor.Services.Contracts
 {
     public interface IExecStatisticsService
     {
-        Task SaveProcedureExecuteInfo(TimerDto timer, ProcedureDto procedure, IEnumerable<ParamDto>? paramDtos);
+        Task SaveProcedureExecuteInfo(TimerDto timer, ProcedureDto procedure, IEnumerable<ParamDto>? paramDtoList);
         Task SaveReportRefreshInfo(TimerDto timer, ProcedureDto procedure, string templateName);
         Task SaveReportSendInfo(TimerDto timer, ProcedureDto procedure);
     }

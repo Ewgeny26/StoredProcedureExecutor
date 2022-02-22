@@ -4,6 +4,7 @@ using StoredProcedureExecutor.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using StoredProcedureExecutor.Infrastructure.Contracts;
 
 namespace StoredProcedureExecutor
 {

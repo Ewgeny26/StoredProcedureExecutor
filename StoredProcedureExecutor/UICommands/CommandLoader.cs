@@ -1,5 +1,6 @@
 ﻿using StoredProcedureExecutor.Infrastructure;
 using System.Windows;
+using StoredProcedureExecutor.Infrastructure.Implementations;
 
 namespace StoredProcedureExecutor.UICommands
 {

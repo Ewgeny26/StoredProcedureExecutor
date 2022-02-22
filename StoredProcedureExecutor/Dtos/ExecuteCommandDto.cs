@@ -5,7 +5,7 @@ namespace StoredProcedureExecutor.Dtos
 {
     public class ExecuteCommandDto
     {
-        public string connectionString { get; set; } = string.Empty;
+        public string ConnectionString { get; set; } = string.Empty;
         public string Query { get; set; } = string.Empty;
         public int RetryCount { get; set; }
         public int RetryDelay { get; set; }

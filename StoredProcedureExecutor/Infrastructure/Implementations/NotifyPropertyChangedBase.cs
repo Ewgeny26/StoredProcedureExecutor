@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace StoredProcedureExecutor.Infrastructure
+namespace StoredProcedureExecutor.Infrastructure.Implementations
 {
     public abstract class NotifyPropertyChangedBase : INotifyPropertyChanged
     {

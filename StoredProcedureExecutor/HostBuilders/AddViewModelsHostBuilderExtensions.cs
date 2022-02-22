@@ -8,7 +8,6 @@ namespace StoredProcedureExecutor.HostBuilders
     {
         public static IHostBuilder AddViewModels(this IHostBuilder host)
         {
-
             host.ConfigureServices(services =>
             {
                 services.AddTransient<MainWindowViewModel>();

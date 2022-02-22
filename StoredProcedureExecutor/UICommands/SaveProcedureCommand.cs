@@ -9,6 +9,7 @@ namespace StoredProcedureExecutor.UICommands
         protected readonly IProceduresService _procedureService;
         protected readonly ICurrentUserService _currentUserService;
         protected readonly ExecutingViewModel _viewModel;
+
         public SaveProcedureCommand(
             ExecutingViewModel executingViewModel,
             IProceduresService proceduresService,
@@ -18,9 +19,13 @@ namespace StoredProcedureExecutor.UICommands
             _viewModel = executingViewModel;
             _currentUserService = currentUserService;
         }
+
         public override async Task ExecuteAsync(object? parameter)
         {
-            if (_viewModel.Procedure == null) return;
+            if (_viewModel.Procedure == null)
+            {
+                return;
+            }
             _viewModel.Procedure.LastUsername = _currentUserService.GetUsername();
             await _procedureService.UpdateProcedure(_viewModel.Procedure, _viewModel.Params);
         }

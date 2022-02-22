@@ -16,7 +16,9 @@ namespace StoredProcedureExecutor.Services.Implementations
     {
         private readonly IPlainQueryExecutorService _plainQueryExecutorService;
         private readonly DbConfiguration _dbConfiguration;
-        public ProcExecutorService(IPlainQueryExecutorService plainQueryExecutorService, DbConfiguration dbConfiguration)
+
+        public ProcExecutorService(IPlainQueryExecutorService plainQueryExecutorService,
+            DbConfiguration dbConfiguration)
         {
             _plainQueryExecutorService = plainQueryExecutorService;
             _dbConfiguration = dbConfiguration;
@@ -24,14 +26,18 @@ namespace StoredProcedureExecutor.Services.Implementations
 
         public async Task CheckExistProcedure(IProcedureInfo procedureInfo)
         {
-            var query = "SELECT COUNT(object_id) FROM sys.objects WHERE SCHEMA_NAME(schema_id) = @schema and name = @procedureName";
+            var query =
+                "SELECT COUNT(object_id) FROM sys.objects WHERE SCHEMA_NAME(schema_id) = @schema and name = @procedureName";
             var parameters = BuildProcedureSearchParams(procedureInfo);
             var connectionString = BuildConnectionString(procedureInfo);
             Func<DbDataReader, int> map = (result) => result.GetInt32(0);
-            var procNotFoundException = new ProcedureNotFoundException($"Procedure with name [{procedureInfo.Name}] on schema [{procedureInfo.Schema}] not found");
+            var procNotFoundException =
+                new ProcedureNotFoundException(
+                    $"Procedure with name [{procedureInfo.Name}] on schema [{procedureInfo.Schema}] not found");
             try
             {
-                var result = await _plainQueryExecutorService.RawSqlQueryAsync(connectionString, query, parameters, map);
+                var result =
+                    await _plainQueryExecutorService.RawSqlQueryAsync(connectionString, query, parameters, map);
                 var existProcedureCount = result.FirstOrDefault();
                 if (existProcedureCount == 0)
                 {
@@ -42,7 +48,6 @@ namespace StoredProcedureExecutor.Services.Implementations
             {
                 throw procNotFoundException;
             }
-
         }
 
         public async Task ExecuteProc(IProcedureInfo procedureInfo, IEnumerable<IBaseParamInfo>? paramInfos)
@@ -51,15 +56,12 @@ namespace StoredProcedureExecutor.Services.Implementations
             List<SqlParameter>? parameters = null;
             if (paramInfos != null)
             {
-                parameters = new List<SqlParameter>();
-                foreach (var param in paramInfos)
-                {
-                    parameters.Add(new SqlParameter(param.Name, param.Value));
-                }
+                parameters = paramInfos.Select(param => new SqlParameter(param.Name, param.Value)).ToList();
             }
+
             var commandDto = new ExecuteCommandDto
             {
-                connectionString = BuildConnectionString(procedureInfo),
+                ConnectionString = BuildConnectionString(procedureInfo),
                 Query = query,
                 Parameters = parameters,
                 RetryCount = _dbConfiguration.ProcExecRetryCount,
@@ -70,35 +72,39 @@ namespace StoredProcedureExecutor.Services.Implementations
 
         public List<string>? GetAvailableServers()
         {
-            return _dbConfiguration.AvailabeleExecProcOnServers;
+            return _dbConfiguration.AvailableExecProcOnServers;
         }
 
         public async Task<IEnumerable<ParamInfo>> GetProcedureParamsInfo(IProcedureInfo procedureInfo)
         {
-            var query = "SELECT p.name, TYPE_NAME(P.user_type_id) AS type " +
-                            " FROM sys.objects so INNER JOIN sys.parameters AS p ON so.OBJECT_ID = p.OBJECT_ID" +
-                            " WHERE SCHEMA_NAME(so.schema_id) = @schema and so.name = @procedureName";
+            const string query = "SELECT p.name, TYPE_NAME(P.user_type_id) AS type " +
+                                 " FROM sys.objects so INNER JOIN sys.parameters AS p ON so.OBJECT_ID = p.OBJECT_ID" +
+                                 " WHERE SCHEMA_NAME(so.schema_id) = @schema and so.name = @procedureName";
             var parameters = BuildProcedureSearchParams(procedureInfo);
-            Func<DbDataReader, ParamInfo> map = (result) => new ParamInfo { Name = result.GetString(0), Type = Enum.Parse<SqlDbType>(result.GetString(1), true) };
-            return await _plainQueryExecutorService.RawSqlQueryAsync(BuildConnectionString(procedureInfo), query, parameters, map);
+            Func<DbDataReader, ParamInfo> map = (result) => new ParamInfo
+                { Name = result.GetString(0), Type = Enum.Parse<SqlDbType>(result.GetString(1), true) };
+            return await _plainQueryExecutorService.RawSqlQueryAsync(BuildConnectionString(procedureInfo), query,
+                parameters, map);
         }
 
         private string BuildConnectionString(IProcedureInfo procedureInfo)
         {
-            var connectionStringBuilder = new SqlConnectionStringBuilder(_dbConfiguration.ConnectionString);
-            connectionStringBuilder.DataSource = procedureInfo.Server;
-            connectionStringBuilder.InitialCatalog = procedureInfo.Database;
-            connectionStringBuilder.ConnectTimeout = _dbConfiguration.ConnectionTimeout;
-            connectionStringBuilder.CommandTimeout = _dbConfiguration.CommandTimeout;
+            var connectionStringBuilder = new SqlConnectionStringBuilder(_dbConfiguration.ConnectionString)
+            {
+                DataSource = procedureInfo.Server,
+                InitialCatalog = procedureInfo.Database,
+                ConnectTimeout = _dbConfiguration.ConnectionTimeout,
+                CommandTimeout = _dbConfiguration.CommandTimeout
+            };
             return connectionStringBuilder.ToString();
         }
 
-        private List<SqlParameter> BuildProcedureSearchParams(IProcedureInfo procedureInfo)
+        private static IEnumerable<SqlParameter> BuildProcedureSearchParams(IProcedureInfo procedureInfo)
         {
             return new List<SqlParameter>
             {
-                new SqlParameter ("@schema",procedureInfo.Schema),
-                new SqlParameter ("@procedureName",procedureInfo.Name)
+                new SqlParameter("@schema", procedureInfo.Schema),
+                new SqlParameter("@procedureName", procedureInfo.Name)
             };
         }
     }

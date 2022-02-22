@@ -1,6 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 
-namespace StoredProcedureExecutor.Infrastructure
+namespace StoredProcedureExecutor.Infrastructure.Contracts
 {
     public interface IWindowSnackbars
     {

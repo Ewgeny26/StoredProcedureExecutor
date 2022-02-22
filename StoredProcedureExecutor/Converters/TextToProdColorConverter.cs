@@ -6,17 +6,20 @@ namespace StoredProcedureExecutor.Converters
 {
     public class TextToProdColorConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        private const string DefaultTextColor = "#fff";
+        private const string ProdTextColor = "#c62828";
+
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if(value is string)
+            if (value is string text)
             {
-                var text = (string)value;
-                return text.StartsWith("prod", StringComparison.OrdinalIgnoreCase) ? "#c62828" : "#fff";
+                return text.StartsWith("prod", StringComparison.OrdinalIgnoreCase) ? ProdTextColor : DefaultTextColor;
             }
+
             throw new InvalidCastException();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -1,23 +1,26 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using StoredProcedureExecutor.Pages;
-using StoredProcedureExecutor.Services.Constracts;
 using StoredProcedureExecutor.ViewModels;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using StoredProcedureExecutor.Infrastructure.Contracts;
 
-namespace StoredProcedureExecutor.Infrastructure.Impementations
+namespace StoredProcedureExecutor.Infrastructure.Implementations
 {
     public class NavigationService : INavigationService
     {
         private readonly IServiceProvider _serviceProvider;
+
         public NavigationService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
-        public async Task NavigateTo<TViewModel>(Action? whenDone = null, object? model = null) where TViewModel : IViewModel
+
+        public async Task NavigateTo<TViewModel>(Action? whenDone = null, object? model = null)
+            where TViewModel : IViewModel
         {
             var mainWindow = _serviceProvider.GetRequiredService<IWindowNavigation>();
             mainWindow.Main.Children.Clear();
@@ -26,7 +29,7 @@ namespace StoredProcedureExecutor.Infrastructure.Impementations
             {
                 var page = this.CreatePage(typeof(TViewModel));
                 var viewModel = page.DataContext as IViewModel
-                    ?? throw new Exception($"Unknown view model: {typeof(TViewModel)}.");
+                                ?? throw new Exception($"Unknown view model: {typeof(TViewModel)}.");
                 await viewModel.Initialize(whenDone, model);
                 mainWindow.Main.Children.Add(page);
             }
@@ -35,7 +38,6 @@ namespace StoredProcedureExecutor.Infrastructure.Impementations
                 mainWindow.Loader.Visibility = Visibility.Hidden;
                 CommandManager.InvalidateRequerySuggested(); // Refresh all binding commands
             }
-
         }
 
 

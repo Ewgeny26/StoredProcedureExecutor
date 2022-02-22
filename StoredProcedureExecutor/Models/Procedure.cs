@@ -24,7 +24,10 @@ namespace StoredProcedureExecutor.Models
         public Template? Template { get; set; }
         public List<ProcedureParam>? Params { get; set; }
 
-        public Procedure() { }
+        public Procedure()
+        {
+        }
+
         public Procedure(string server, string database, string schema, string name, string? description = null)
         {
             Database = database;

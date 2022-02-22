@@ -20,7 +20,7 @@ namespace StoredProcedureExecutor.Mappers
         {
             return new Template
             {
-                Id = dto.Id.HasValue ? dto.Id.Value : 0,
+                Id = dto.Id ?? 0,
                 Name = dto.Name,
                 FileType = dto.FileType,
                 ProcedureId = dto.ProcedureId

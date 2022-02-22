@@ -15,6 +15,7 @@ namespace StoredProcedureExecutor.Services.Implementations
     public class DbTemplatesService : ITemplatesService
     {
         private readonly IProceduresDbContext _proceduresDbContext;
+
         public DbTemplatesService(IProceduresDbContext proceduresDbContext)
         {
             _proceduresDbContext = proceduresDbContext;
@@ -23,6 +24,7 @@ namespace StoredProcedureExecutor.Services.Implementations
         public async Task Upload(string path, int procedureId)
         {
             CheckExistTemplate(path);
+
             var template = new Template
             {
                 Name = Path.GetFileName(path),
@@ -31,14 +33,15 @@ namespace StoredProcedureExecutor.Services.Implementations
                 ProcedureId = procedureId,
             };
 
-            using (var file = File.Open(path, FileMode.Open))
+            await using (var file = File.Open(path, FileMode.Open))
             {
-                using (var memoryStream = new MemoryStream())
+                await using (var memoryStream = new MemoryStream())
                 {
-                    file.CopyTo(memoryStream);
+                    await file.CopyToAsync(memoryStream);
                     template.DataFile = memoryStream.ToArray();
                 }
             }
+
             await _proceduresDbContext.Templates.AddAsync(template);
             await _proceduresDbContext.SaveChangesAsync();
         }
@@ -46,9 +49,8 @@ namespace StoredProcedureExecutor.Services.Implementations
         public async Task Remove(int templateId)
         {
             var template = await _proceduresDbContext.Templates
-                .FindAsync(templateId) 
-                ?? throw new EntityNotFoundException("Template by id [{procedureId}] not found");
-            if (template == null) return;
+                               .FindAsync(templateId)
+                           ?? throw new EntityNotFoundException($"Template by id [{templateId}] not found");
             _proceduresDbContext.Templates.Remove(template);
             await _proceduresDbContext.SaveChangesAsync();
         }
@@ -56,14 +58,13 @@ namespace StoredProcedureExecutor.Services.Implementations
         public async Task<string> DownloadFileAsync(TemplateDto template, string fileName, string outputPath)
         {
             var filePath = $"{outputPath}/{fileName}{template.FileType}";
+
             var dataFile = await _proceduresDbContext.Templates
                 .Where(f => f.Id == template.Id)
                 .Select(f => f.DataFile)
                 .FirstAsync();
-            using (var fileWriter = File.Create(filePath))
-            {
-                fileWriter.Write(dataFile);
-            }
+            await using var fileWriter = File.Create(filePath);
+            fileWriter.Write(dataFile);
             return filePath;
         }
 

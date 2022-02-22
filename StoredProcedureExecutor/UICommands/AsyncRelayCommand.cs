@@ -15,9 +15,10 @@ namespace StoredProcedureExecutor.UICommands
             _canExecute = canExecute;
             _loader = loader;
         }
+
         public override bool CanExecute(object? parameter)
         {
-            return _canExecute == null ? true : _canExecute.Invoke();
+            return _canExecute?.Invoke() ?? true;
         }
 
         public override async Task ExecuteAsync(object? parameter)
@@ -30,7 +31,6 @@ namespace StoredProcedureExecutor.UICommands
             finally
             {
                 _loader?.Stop();
-
             }
         }
     }

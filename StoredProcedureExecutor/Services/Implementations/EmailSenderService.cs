@@ -13,10 +13,12 @@ namespace StoredProcedureExecutor.Services.Implementations
     {
         private const int MaxAttachmentLength = 30720; // 30mb
         private readonly EmailConfiguration _emailConfiguration;
+
         public EmailSenderService(EmailConfiguration emailConfiguration)
         {
             _emailConfiguration = emailConfiguration;
         }
+
         public async Task SendAsync(EmailMessageDto message)
         {
             using (var smtpClient = BuildSmtpClient())
@@ -26,28 +28,34 @@ namespace StoredProcedureExecutor.Services.Implementations
                     mail.Subject = message.Subject;
                     mail.Body = message.Body;
                     mail.From = new MailAddress(_emailConfiguration.From);
+
                     foreach (var recipient in message.Recipients)
                     {
                         mail.To.Add(new MailAddress(recipient));
                     }
+
                     if (message.Attachments != null)
                     {
                         foreach (var attachment in message.Attachments)
                         {
                             // MailMessage execute Dispose for each file attachment
                             var file = File.OpenRead(attachment);
+
                             if (file.Length > MaxAttachmentLength)
                             {
                                 await file.DisposeAsync();
-                                throw new AccededSizeEmailAttachmentException($"File [{Path.GetFileName(attachment)}] acceded limit of size email attachment");
+
+                                throw new AccededSizeEmailAttachmentException(
+                                    $"File [{Path.GetFileName(attachment)}] acceded limit of size email attachment");
                             }
+
                             mail.Attachments.Add(new Attachment(file, Path.GetFileName(file.Name)));
                         }
                     }
+
                     await smtpClient.SendMailAsync(mail);
                 }
             }
-
         }
 
         private SmtpClient BuildSmtpClient()

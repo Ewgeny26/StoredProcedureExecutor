@@ -1,9 +1,8 @@
-﻿namespace StoredProcedureExecutor.Exceptions
+﻿namespace StoredProcedureExecutor.Exceptions;
+
+public class FileNotExistException : BusinessLogicException
 {
-    public class FileNotExistException : BusinessLogicException
+    public FileNotExistException(string message) : base(message)
     {
-        public FileNotExistException(string message) : base(message)
-        {
-        }
     }
 }

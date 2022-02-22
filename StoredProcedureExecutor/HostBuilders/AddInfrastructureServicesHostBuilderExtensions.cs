@@ -2,8 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using StoredProcedureExecutor.Infrastructure;
 using StoredProcedureExecutor.Infrastructure.Contracts;
-using StoredProcedureExecutor.Infrastructure.Impementations;
-using StoredProcedureExecutor.Services.Constracts;
+using StoredProcedureExecutor.Infrastructure.Implementations;
 using System;
 
 namespace StoredProcedureExecutor.HostBuilders
@@ -12,7 +11,6 @@ namespace StoredProcedureExecutor.HostBuilders
     {
         public static IHostBuilder AddInfrastructureServices(this IHostBuilder host)
         {
-
             host.ConfigureServices(services =>
             {
                 services.AddSingleton<INavigationService>(d => new NavigationService(d));

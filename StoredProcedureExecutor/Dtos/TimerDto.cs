@@ -7,7 +7,7 @@ namespace StoredProcedureExecutor.Dtos
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
         public DateTime StartAt { get; private set; }
-        public TimeSpan TimeElapsed { get => _stopwatch.Elapsed; }
+        public TimeSpan TimeElapsed => _stopwatch.Elapsed;
 
         public void Start()
         {

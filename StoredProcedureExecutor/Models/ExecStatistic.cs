@@ -12,6 +12,5 @@ namespace StoredProcedureExecutor.Models
         public DateTime StartAt { get; init; }
         public TimeSpan TimeElpsed { get; init; }
         public string? ParamsJson { get; set; }
-
     }
 }

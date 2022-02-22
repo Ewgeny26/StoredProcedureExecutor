@@ -8,8 +8,8 @@ namespace StoredProcedureExecutor.UICommands
     {
         public event EventHandler? CanExecuteChanged
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public abstract bool CanExecute(object? parameter);

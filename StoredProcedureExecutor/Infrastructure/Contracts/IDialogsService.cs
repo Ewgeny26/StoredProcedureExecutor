@@ -1,6 +1,7 @@
-﻿using StoredProcedureExecutor.Dtos;
-using System.Threading.Tasks;
-namespace StoredProcedureExecutor.Infrastructure
+﻿using System.Threading.Tasks;
+using StoredProcedureExecutor.Dtos;
+
+namespace StoredProcedureExecutor.Infrastructure.Contracts
 {
     public interface IDialogsService
     {

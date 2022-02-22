@@ -19,23 +19,27 @@ namespace StoredProcedureExecutor.Services.Implementations
         {
             _context = context;
         }
-        public async Task<ProcedureDto> CreateProcedureAsync(ProcedureDto createProcedureDto, IEnumerable<ParamDto>? createParamDtos)
+
+        public async Task<ProcedureDto> CreateProcedureAsync(ProcedureDto createProcedureDto,
+            IEnumerable<ParamDto>? createParamDtoList)
         {
             await CheckExistProcedure(createProcedureDto);
             var procedure = createProcedureDto.ToModel();
             procedure.CreatedAt = DateTime.UtcNow;
             await _context.Procedures.AddAsync(procedure);
-            if (createParamDtos != null && createParamDtos.ToList().Count > 0)
+            if (createParamDtoList != null)
             {
                 var procedureParams = new List<ProcedureParam>();
-                foreach (var param in createParamDtos)
+                foreach (var param in createParamDtoList)
                 {
                     var procedureParam = param.ToModel(procedure);
                     procedureParam.CreatedAt = DateTime.UtcNow;
                     procedureParams.Add(procedureParam);
                 }
+
                 await _context.ProcedureParams.AddRangeAsync(procedureParams);
             }
+
             await _context.SaveChangesAsync();
             return procedure.ToDto();
         }
@@ -43,8 +47,8 @@ namespace StoredProcedureExecutor.Services.Implementations
         public async Task<ProcedureDto> GetProcedureById(int procedureId)
         {
             var procedure = await _context.Procedures
-                .FindAsync(procedureId)
-                ?? throw new EntityNotFoundException($"Procedure with id [{procedureId}] not found");
+                                .FindAsync(procedureId)
+                            ?? throw new EntityNotFoundException($"Procedure with id [{procedureId}] not found");
             return procedure.ToDto();
         }
 
@@ -73,26 +77,32 @@ namespace StoredProcedureExecutor.Services.Implementations
             var procedure = procedureDto.ToModel();
             _context.Procedures.Update(procedure);
             var existParams = await GetProcedureParams(procedure.Id);
-            if (existParams != null && existParams?.Count() > 0)
+            var existParamList = existParams?.ToList();
+            if (existParamList is { Count: > 0 })
             {
-                var paramModel = existParams.Select(p => p.ToModel(procedure));
+                var paramModel = existParamList.Select(p => p.ToModel(procedure));
                 _context.ProcedureParams.RemoveRange(paramModel);
             }
-            if (paramDtos?.Count() > 0)
+
+            var paramList = paramDtos?.ToList();
+            if (paramList?.Count > 0)
             {
-                await _context.ProcedureParams.AddRangeAsync(paramDtos.Select(p => p.ToModel(procedure)));
+                await _context.ProcedureParams.AddRangeAsync(paramList.Select(p => p.ToModel(procedure)));
             }
+
             await _context.SaveChangesAsync();
         }
 
-        private async Task CheckExistProcedure(ProcedureDto procedureDto)
+        private async Task CheckExistProcedure(IProcedureInfo procedureDto)
         {
             var procedureCount = await _context.Procedures
-                .Where(p => p.Server == p.Server && p.Database == procedureDto.Database && p.Schema == procedureDto.Schema && p.Name == procedureDto.Name)
+                .Where(p => p.Database == procedureDto.Database && p.Schema == procedureDto.Schema &&
+                            p.Name == procedureDto.Name)
                 .CountAsync();
             if (procedureCount > 0)
             {
-                throw new ProcedureAlreadyExistException($"Procedure [{procedureDto.Schema}.{procedureDto.Name}] already exist");
+                throw new ProcedureAlreadyExistException(
+                    $"Procedure [{procedureDto.Schema}.{procedureDto.Name}] already exist");
             }
         }
     }

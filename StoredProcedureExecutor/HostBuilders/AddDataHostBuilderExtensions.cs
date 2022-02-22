@@ -10,11 +10,10 @@ namespace StoredProcedureExecutor.HostBuilders
     {
         public static IHostBuilder AddData(this IHostBuilder host)
         {
-
             host.ConfigureServices(services =>
             {
                 services.AddTransient<IProceduresDbContext, ProceduresDbContext>();
-                services.AddTransient<IPlainQueryExecutorService, MSSQLQueryExecutorService>();
+                services.AddTransient<IPlainQueryExecutorService, MssqlQueryExecutorService>();
             });
             return host;
         }

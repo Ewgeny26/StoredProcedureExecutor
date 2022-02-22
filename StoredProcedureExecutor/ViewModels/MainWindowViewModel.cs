@@ -1,46 +1,39 @@
 ﻿using StoredProcedureExecutor.Common;
 using StoredProcedureExecutor.Configurations;
-using StoredProcedureExecutor.Infrastructure;
-using StoredProcedureExecutor.Services.Constracts;
 using System.Collections.ObjectModel;
+using StoredProcedureExecutor.Infrastructure.Contracts;
 
 namespace StoredProcedureExecutor.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly ConfigurationFactory _configurationFactory;
-        private readonly IDialogsService _dialogsService;
         private readonly INavigationService _navigationService;
-        private string _currentEnviroment;
+        private string _currentEnvironment;
 
         public MainWindowViewModel(
             ConfigurationFactory configurationFactory,
-            IDialogsService dialogsService,
             INavigationService navigationService)
         {
             _configurationFactory = configurationFactory;
-            _dialogsService = dialogsService;
-            Enviroments = _configurationFactory.AllowedEnviroments.ToObservableCollection();
-            _currentEnviroment = _configurationFactory.CurrentEnviroment;
+            Environments = _configurationFactory.AllowedEnvironments.ToObservableCollection();
+            _currentEnvironment = _configurationFactory.CurrentEnvironment;
             _navigationService = navigationService;
         }
 
-        public ObservableCollection<string> Enviroments { get; set; }
-        public string CurrentEnviroment
+        public ObservableCollection<string> Environments { get; set; }
+
+        public string CurrentEnvironment
         {
-            get => _currentEnviroment;
-            set => SetEnviroment(value);
+            get => _currentEnvironment;
+            set => SetEnvironment(value);
         }
 
-        private async void SetEnviroment(string env)
+        private async void SetEnvironment(string env)
         {
-            //var result = await _dialogsService.Show<ConfirmDialogViewModel, bool>($"Are you sure change enviroment on [{env}]");
-            //if (result == true)
-            //{
-            _configurationFactory.SetEnviroment(env);
-            SetProperty(ref _currentEnviroment, env);
-            await _navigationService.NavigateTo<ProceduresViewModel>(null, null);
-            //}
+            _configurationFactory.SetEnvironment(env);
+            SetProperty(ref _currentEnvironment, env);
+            await _navigationService.NavigateTo<ProceduresViewModel>();
         }
     }
 }

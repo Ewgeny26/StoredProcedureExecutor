@@ -2,13 +2,13 @@
 using StoredProcedureExecutor.Constants;
 using StoredProcedureExecutor.Dtos;
 using StoredProcedureExecutor.Infrastructure;
-using StoredProcedureExecutor.Services.Constracts;
 using StoredProcedureExecutor.Services.Contracts;
 using StoredProcedureExecutor.UICommands;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using StoredProcedureExecutor.Infrastructure.Contracts;
 
 namespace StoredProcedureExecutor.ViewModels
 {

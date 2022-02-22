@@ -9,7 +9,6 @@ namespace StoredProcedureExecutor.HostBuilders
     {
         public static IHostBuilder AddPages(this IHostBuilder host)
         {
-
             host.ConfigureServices(services =>
             {
                 services.AddTransient<ProceduresPage>();

@@ -3,7 +3,7 @@ using StoredProcedureExecutor.Models;
 
 namespace StoredProcedureExecutor.Mappers
 {
-    public static class ProcedureMapperExtenstions
+    public static class ProcedureMapperExtensions
     {
         public static ProcedureDto ToDto(this Procedure model)
         {
@@ -31,6 +31,7 @@ namespace StoredProcedureExecutor.Mappers
             {
                 Id = model.Id,
                 Name = model.Name,
+                Alias = model.Alias,
                 Type = model.Type,
                 Value = model.Value
             };
@@ -40,7 +41,7 @@ namespace StoredProcedureExecutor.Mappers
         {
             return new Procedure
             {
-                Id = dto.Id.HasValue ? dto.Id.Value : 0,
+                Id = dto.Id ?? 0,
                 Database = dto.Database,
                 Server = dto.Server,
                 Schema = dto.Schema,
@@ -60,8 +61,9 @@ namespace StoredProcedureExecutor.Mappers
         {
             return new ProcedureParam
             {
-                Id = dto.Id.HasValue ? dto.Id.Value : 0,
+                Id = dto.Id ?? 0,
                 Name = dto.Name,
+                Alias = dto.Alias,
                 Type = dto.Type,
                 Value = dto.Value,
                 Procedure = procedure

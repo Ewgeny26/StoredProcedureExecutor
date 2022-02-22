@@ -14,12 +14,8 @@ namespace StoredProcedureExecutor.Models
         public int ProcedureId { get; set; }
         public Procedure? Procedure { get; set; }
 
-        public ProcedureParam() { }
-        public ProcedureParam(string name, SqlDbType type, Procedure procedure)
+        public ProcedureParam()
         {
-            Name = name;
-            Type = type;
-            Procedure = procedure;
         }
     }
 }
