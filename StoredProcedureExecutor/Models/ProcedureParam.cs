@@ -7,6 +7,7 @@ namespace StoredProcedureExecutor.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string Alias { get; set; } = string.Empty;
         public SqlDbType Type { get; set; }
         public string? Value { get; set; }
         public DateTime CreatedAt { get; set; }
