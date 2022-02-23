@@ -11,7 +11,7 @@ namespace StoredProcedureExecutor.Converters
         {
             if (value is bool booleanValue)
             {
-                return booleanValue ? Visibility.Hidden : Visibility.Visible;
+                return booleanValue ? Visibility.Collapsed : Visibility.Visible;
             }
 
             throw new InvalidCastException();

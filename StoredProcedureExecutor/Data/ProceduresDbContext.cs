@@ -41,7 +41,7 @@ namespace StoredProcedureExecutor.Data
                 b.Property(p => p.Description).HasMaxLength(ColumnConstraints.DescriptionMaxLength);
                 b.Property(p => p.EmailRecipients).HasMaxLength(ColumnConstraints.EmailRecipientsMaxLength);
                 b.Property(p => p.EmailSubject).HasMaxLength(ColumnConstraints.EmailSubjectMaxLength);
-                b.Property(p => p.OutputReportPath).HasMaxLength(ColumnConstraints.OutputReportPathLength);
+                b.Property(p => p.OutputReportPath).HasMaxLength(ColumnConstraints.PathMaxLength);
                 b.Property(p => p.LastUsername).HasMaxLength(ColumnConstraints.LastUsernameMaxLength);
             });
 

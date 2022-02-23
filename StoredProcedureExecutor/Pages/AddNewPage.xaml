@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:StoredProcedureExecutor.Converters"
+             xmlns:constants="clr-namespace:StoredProcedureExecutor.Constants"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" Background="#fff"
              HorizontalAlignment="Stretch"
@@ -84,7 +85,7 @@
                                  HorizontalAlignment="Right"
                                  materialDesign:HintAssist.Hint="Enter database"
                                  FontSize="18"
-                                 MaxLength="128"
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.DatabaseMaxLength}}"
                                  Margin="20 0" />
                     </Grid>
 
@@ -103,7 +104,7 @@
                                  HorizontalAlignment="Right"
                                  materialDesign:HintAssist.Hint="Enter schema name"
                                  FontSize="18"
-                                 MaxLength="128"
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.SchemaMaxLength}}"
                                  Margin="20 0" />
                     </Grid>
 
@@ -122,7 +123,7 @@
                                  HorizontalAlignment="Right"
                                  materialDesign:HintAssist.Hint="Enter procedure name"
                                  FontSize="18"
-                                 MaxLength="128"
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.ProcedureMaxLength}}"
                                  Margin="20 0" />
                     </Grid>
 
@@ -144,7 +145,7 @@
                                  HorizontalAlignment="Right"
                                  materialDesign:HintAssist.Hint="Enter path"
                                  FontSize="18"
-                                 MaxLength="260"
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.PathMaxLength}}"
                                  Margin="20 0" />
                         <Button Style="{StaticResource MaterialDesignFloatingActionButton}"
                                 Command="{Binding UploadFileDialogCommand}"
@@ -179,7 +180,7 @@
                         <TextBox Text="{Binding ProcedureDto.Description}"
                                  Grid.Column="1"
                                  Width="300"
-                                 MaxLength="500"
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.DescriptionMaxLength}}"
                                  HorizontalAlignment="Right"
                                  materialDesign:HintAssist.Hint="Enter description"
                                  TextWrapping="Wrap"
@@ -225,7 +226,7 @@
                                             <TextBox Text="{Binding Alias}"
                                                      Margin="0 0 0 10"
                                                      Width="150"
-                                                     MaxLength="128" />
+                                                     MaxLength="{Binding Source={x:Static constants:ColumnConstraints.ParamNameMaxLength}}" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
