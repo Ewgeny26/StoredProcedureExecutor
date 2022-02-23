@@ -16,6 +16,7 @@ namespace StoredProcedureExecutor.Common
             IEnumerable<T>? data)
         {
             if (data == null) return collections;
+            collections.Clear();
             foreach (var item in data)
             {
                 collections.Add(item);

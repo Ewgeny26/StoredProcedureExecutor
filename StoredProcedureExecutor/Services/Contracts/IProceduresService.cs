@@ -9,7 +9,7 @@ namespace StoredProcedureExecutor.Services.Contracts
         Task<ProcedureDto> CreateProcedureAsync(ProcedureDto createProcedureDto,
             IEnumerable<ParamDto>? createParamDtoList);
 
-        Task<IEnumerable<ProcedureDto>> GetProcedures();
+        Task<IEnumerable<ProcedureDto>> GetProcedures(ProcedureFilterDto? filter = null);
         Task RemoveProcedure(int procedureId);
         Task<IEnumerable<ParamDto>?> GetProcedureParams(int procedureId);
         Task<ProcedureDto> GetProcedureById(int procedureId);
