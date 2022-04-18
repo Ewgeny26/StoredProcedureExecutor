@@ -60,9 +60,18 @@ namespace StoredProcedureExecutor.Services.Implementations
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<ProcedureDto>> GetProcedures()
+        public async Task<IEnumerable<ProcedureDto>> GetProcedures(ProcedureFilterDto? filter = null)
         {
-            return await _context.Procedures.Select(p => p.ToDto()).ToListAsync();
+            var query = _context.Procedures.AsQueryable();
+            if (filter != null && !string.IsNullOrWhiteSpace(filter.WordToFind))
+            {
+                query = query.Where(p => EF.Functions.Like(p.Name, $"%{filter.WordToFind}%"));
+            }
+
+            return await query
+                .OrderByDescending(p=>p.CreatedAt)
+                .Select(p => p.ToDto())
+                .ToListAsync();
         }
 
         public async Task RemoveProcedure(int procedureId)

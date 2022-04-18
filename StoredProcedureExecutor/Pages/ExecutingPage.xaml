@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:StoredProcedureExecutor.Converters"
+             xmlns:constants="clr-namespace:StoredProcedureExecutor.Constants"
              mc:Ignorable="d" Background="#fff"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch"
@@ -74,7 +75,7 @@
                                  SpellCheck.IsEnabled="True"
                                  FontSize="18"
                                  Margin="20 0"
-                                 MaxLength="500" />
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.EmailRecipientsMaxLength}}" />
                     </Grid>
 
                     <Grid HorizontalAlignment="Stretch" Margin="0 30 0 0">
@@ -94,7 +95,7 @@
                                  HorizontalAlignment="Right"
                                  materialDesign:HintAssist.Hint="Enter email subject"
                                  FontSize="18" Margin="20 0"
-                                 MaxLength="100" />
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.EmailSubjectMaxLength}}" />
                     </Grid>
 
                     <Grid HorizontalAlignment="Stretch" Margin="0 50 0 0">
@@ -114,7 +115,7 @@
                                  materialDesign:HintAssist.Hint="Enter path to folder"
                                  FontSize="18"
                                  Margin="20 0"
-                                 MaxLength="260" />
+                                 MaxLength="{Binding Source={x:Static constants:ColumnConstraints.PathMaxLength}}" />
                         <Button Style="{StaticResource MaterialDesignFloatingActionButton}"
                                 Command="{Binding OpenFolderDialogCommand}"
                                 Height="40"
